@@ -282,17 +282,21 @@ export default function ExamPage() {
     // Calculate score
     const score = calculateScore()
 
-    // Store score in localStorage for the results page
+    // Store score in localStorage for the results page (as fallback)
     localStorage.setItem("examScore", score.toString())
     localStorage.setItem("totalQuestions", questions.length.toString())
     localStorage.setItem("answeredQuestions", answeredQuestions.length.toString())
     localStorage.setItem("examSubject", subject)
 
+    // Generate a session ID if we don't have one
+    const sessionId = localStorage.getItem("examSessionId") || `session-${Date.now()}`
+    localStorage.setItem("examSessionId", sessionId)
+
     // Stop media streams before navigating
     stopMediaStream()
 
-    // Navigate to results page
-    router.push("/results")
+    // Navigate to results page with query parameters
+    router.push(`/results?sessionId=${sessionId}&subject=${subject}`)
   }
 
   // Calculate the score based on answered questions
