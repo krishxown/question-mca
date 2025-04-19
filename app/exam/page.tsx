@@ -11,6 +11,9 @@ import { Mic, Clock } from "lucide-react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useMedia } from "@/context/media-context"
 
+// Import the WebcamMonitor component near the top of the file
+import { WebcamMonitor } from "@/components/webcam-monitor"
+
 // Mock questions data by subject - expanded to 20 questions per subject
 const questionsBySubject = {
   "software-engineering": Array.from({ length: 20 }, (_, i) => ({
@@ -487,7 +490,12 @@ export default function ExamPage() {
           <div className="bg-white p-4 rounded-lg shadow-sm mb-6">
             <h3 className="font-medium mb-3">Camera Preview</h3>
             <div className="aspect-video bg-gray-200 rounded-lg flex items-center justify-center mb-2 overflow-hidden">
-              <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
+              <WebcamMonitor
+                userId="user-123" // In a real app, use the actual user ID
+                examId={subject}
+                questionId={currentQuestion?.id.toString() || "1"}
+                sessionId={`session-${Date.now()}`} // In a real app, use a persistent session ID
+              />
             </div>
           </div>
 
