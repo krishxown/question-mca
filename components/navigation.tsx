@@ -68,7 +68,7 @@ export function Navigation() {
       <div className="container flex h-16 items-center">
         <div className="flex w-full items-center justify-between">
           <Link href="/" className="font-bold text-xl text-blue-600">
-            AI Exam
+            EduVerify
           </Link>
 
           <nav className="flex items-center justify-center space-x-6">

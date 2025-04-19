@@ -9,184 +9,88 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { Mic, Clock } from "lucide-react"
 import { useRouter, useSearchParams } from "next/navigation"
+import { useMedia } from "@/context/media-context"
 
-// Mock questions data by subject
+// Mock questions data by subject - expanded to 20 questions per subject
 const questionsBySubject = {
-  "software-engineering": [
-    {
-      id: 1,
-      text: "Which of the following is NOT a software development methodology?",
-      options: [
-        { id: "a", text: "Agile" },
-        { id: "b", text: "Waterfall" },
-        { id: "c", text: "Quantum Programming" },
-        { id: "d", text: "Scrum" },
-      ],
-      difficulty: "easy",
-    },
-    {
-      id: 2,
-      text: "What does TDD stand for in software development?",
-      options: [
-        { id: "a", text: "Test-Driven Development" },
-        { id: "b", text: "Time-Driven Design" },
-        { id: "c", text: "Technical Design Document" },
-        { id: "d", text: "Total Development Duration" },
-      ],
-      difficulty: "medium",
-    },
-    {
-      id: 3,
-      text: "Which of the following is a key principle of object-oriented programming?",
-      options: [
-        { id: "a", text: "Encapsulation" },
-        { id: "b", text: "Fragmentation" },
-        { id: "c", text: "Centralization" },
-        { id: "d", text: "Duplication" },
-      ],
-      difficulty: "easy",
-    },
-  ],
-  "computer-architecture": [
-    {
-      id: 1,
-      text: "What is the primary function of the ALU in a CPU?",
-      options: [
-        { id: "a", text: "Memory management" },
-        { id: "b", text: "Performing arithmetic and logical operations" },
-        { id: "c", text: "Input/Output control" },
-        { id: "d", text: "Disk storage" },
-      ],
-      difficulty: "medium",
-    },
-    {
-      id: 2,
-      text: "Which of the following is a volatile memory?",
-      options: [
-        { id: "a", text: "ROM" },
-        { id: "b", text: "Hard Disk" },
-        { id: "c", text: "RAM" },
-        { id: "d", text: "Flash Drive" },
-      ],
-      difficulty: "easy",
-    },
-    {
-      id: 3,
-      text: "What does RISC stand for in computer architecture?",
-      options: [
-        { id: "a", text: "Reduced Instruction Set Computer" },
-        { id: "b", text: "Random Instruction Set Computing" },
-        { id: "c", text: "Rapid Integrated System Circuit" },
-        { id: "d", text: "Runtime Instruction Sequence Control" },
-      ],
-      difficulty: "hard",
-    },
-  ],
-  python: [
-    {
-      id: 1,
-      text: "Which of the following is the correct way to create a list in Python?",
-      options: [
-        { id: "a", text: "list = [1, 2, 3]" },
-        { id: "b", text: "list = (1, 2, 3)" },
-        { id: "c", text: "list = {1, 2, 3}" },
-        { id: "d", text: "list = 1, 2, 3" },
-      ],
-      difficulty: "easy",
-    },
-    {
-      id: 2,
-      text: "What is the output of the following code: print(3 * '7')?",
-      options: [
-        { id: "a", text: "21" },
-        { id: "b", text: "777" },
-        { id: "c", text: "7 7 7" },
-        { id: "d", text: "Error" },
-      ],
-      difficulty: "medium",
-    },
-    {
-      id: 3,
-      text: "Which of the following is used for handling exceptions in Python?",
-      options: [
-        { id: "a", text: "try-except" },
-        { id: "b", text: "try-catch" },
-        { id: "c", text: "if-else" },
-        { id: "d", text: "for-in" },
-      ],
-      difficulty: "medium",
-    },
-  ],
-  dsa: [
-    {
-      id: 1,
-      text: "What is the time complexity of binary search?",
-      options: [
-        { id: "a", text: "O(1)" },
-        { id: "b", text: "O(n)" },
-        { id: "c", text: "O(log n)" },
-        { id: "d", text: "O(n²)" },
-      ],
-      difficulty: "medium",
-    },
-    {
-      id: 2,
-      text: "Which data structure operates on a LIFO principle?",
-      options: [
-        { id: "a", text: "Queue" },
-        { id: "b", text: "Stack" },
-        { id: "c", text: "Linked List" },
-        { id: "d", text: "Tree" },
-      ],
-      difficulty: "easy",
-    },
-    {
-      id: 3,
-      text: "What is the worst-case time complexity of quicksort?",
-      options: [
-        { id: "a", text: "O(n)" },
-        { id: "b", text: "O(n log n)" },
-        { id: "c", text: "O(n²)" },
-        { id: "d", text: "O(1)" },
-      ],
-      difficulty: "hard",
-    },
-  ],
-  html: [
-    {
-      id: 1,
-      text: "Which HTML tag is used to create a hyperlink?",
-      options: [
-        { id: "a", text: "<a>" },
-        { id: "b", text: "<link>" },
-        { id: "c", text: "<href>" },
-        { id: "d", text: "<url>" },
-      ],
-      difficulty: "easy",
-    },
-    {
-      id: 2,
-      text: "Which attribute is used to specify an alternate text for an image?",
-      options: [
-        { id: "a", text: "title" },
-        { id: "b", text: "alt" },
-        { id: "c", text: "src" },
-        { id: "d", text: "description" },
-      ],
-      difficulty: "easy",
-    },
-    {
-      id: 3,
-      text: "Which HTML element is used to specify a header for a document or section?",
-      options: [
-        { id: "a", text: "<head>" },
-        { id: "b", text: "<top>" },
-        { id: "c", text: "<header>" },
-        { id: "d", text: "<section>" },
-      ],
-      difficulty: "medium",
-    },
-  ],
+  "software-engineering": Array.from({ length: 20 }, (_, i) => ({
+    id: i + 1,
+    text: `Software Engineering Question ${i + 1}: ${
+      [
+        "Which of the following is NOT a software development methodology?",
+        "What does TDD stand for in software development?",
+        "Which of the following is a key principle of object-oriented programming?",
+        "What is the primary purpose of version control systems?",
+        "Which of the following is NOT a software design pattern?",
+        "What is the main goal of continuous integration?",
+        "Which of the following is NOT a type of software testing?",
+        "What does API stand for in software development?",
+        "Which of the following is a characteristic of agile development?",
+        "What is the purpose of a user story in agile development?",
+        "Which of the following is NOT a phase in the traditional waterfall model?",
+        "What is refactoring in software development?",
+        "Which of the following is NOT a principle of SOLID design?",
+        "What is the purpose of a software requirements specification?",
+        "Which of the following is NOT a type of software maintenance?",
+        "What is the primary goal of DevOps?",
+        "Which of the following is NOT a benefit of code reviews?",
+        "What is the purpose of a burndown chart in agile development?",
+        "Which of the following is NOT a type of software architecture?",
+        "What is the purpose of a use case in software engineering?",
+      ][i % 20]
+    }`,
+    options: [
+      { id: "a", text: `Option A for question ${i + 1}` },
+      { id: "b", text: `Option B for question ${i + 1}` },
+      { id: "c", text: `Option C for question ${i + 1}` },
+      { id: "d", text: `Option D for question ${i + 1}` },
+    ],
+    difficulty: ["easy", "medium", "hard"][i % 3],
+  })),
+  "computer-architecture": Array.from({ length: 20 }, (_, i) => ({
+    id: i + 1,
+    text: `Computer Architecture Question ${i + 1}`,
+    options: [
+      { id: "a", text: `Option A for question ${i + 1}` },
+      { id: "b", text: `Option B for question ${i + 1}` },
+      { id: "c", text: `Option C for question ${i + 1}` },
+      { id: "d", text: `Option D for question ${i + 1}` },
+    ],
+    difficulty: ["easy", "medium", "hard"][i % 3],
+  })),
+  python: Array.from({ length: 20 }, (_, i) => ({
+    id: i + 1,
+    text: `Python Question ${i + 1}`,
+    options: [
+      { id: "a", text: `Option A for question ${i + 1}` },
+      { id: "b", text: `Option B for question ${i + 1}` },
+      { id: "c", text: `Option C for question ${i + 1}` },
+      { id: "d", text: `Option D for question ${i + 1}` },
+    ],
+    difficulty: ["easy", "medium", "hard"][i % 3],
+  })),
+  dsa: Array.from({ length: 20 }, (_, i) => ({
+    id: i + 1,
+    text: `DSA Question ${i + 1}`,
+    options: [
+      { id: "a", text: `Option A for question ${i + 1}` },
+      { id: "b", text: `Option B for question ${i + 1}` },
+      { id: "c", text: `Option C for question ${i + 1}` },
+      { id: "d", text: `Option D for question ${i + 1}` },
+    ],
+    difficulty: ["easy", "medium", "hard"][i % 3],
+  })),
+  html: Array.from({ length: 20 }, (_, i) => ({
+    id: i + 1,
+    text: `HTML Question ${i + 1}`,
+    options: [
+      { id: "a", text: `Option A for question ${i + 1}` },
+      { id: "b", text: `Option B for question ${i + 1}` },
+      { id: "c", text: `Option C for question ${i + 1}` },
+      { id: "d", text: `Option D for question ${i + 1}` },
+    ],
+    difficulty: ["easy", "medium", "hard"][i % 3],
+  })),
 }
 
 // Default to software engineering if no subject is specified
@@ -202,12 +106,14 @@ export default function ExamPage() {
   const [answeredQuestions, setAnsweredQuestions] = useState<number[]>([])
   const [reviewedQuestions, setReviewedQuestions] = useState<number[]>([])
   const [lockedQuestions, setLockedQuestions] = useState<number[]>([])
-  const [timeLeft, setTimeLeft] = useState("1 hour 30 minutes 0 seconds")
+  const [timeLeft, setTimeLeft] = useState("40 minutes 0 seconds")
   const [userPhoto, setUserPhoto] = useState<string | null>(null)
   const [questions, setQuestions] = useState(questionsBySubject[subject as keyof typeof questionsBySubject] || [])
   const [nextQuestionDifficulty, setNextQuestionDifficulty] = useState<string>("medium")
+  const [showExitConfirmation, setShowExitConfirmation] = useState(false)
 
   const videoRef = useRef<HTMLVideoElement>(null)
+  const { startMediaStream, stopMediaStream } = useMedia()
 
   // Get current question
   const currentQuestion = questions[currentQuestionIndex]
@@ -223,9 +129,9 @@ export default function ExamPage() {
     // Initialize webcam
     const initWebcam = async () => {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+        const stream = await startMediaStream()
 
-        if (videoRef.current) {
+        if (stream && videoRef.current) {
           videoRef.current.srcObject = stream
         }
       } catch (err) {
@@ -239,9 +145,9 @@ export default function ExamPage() {
       initWebcam()
     }
 
-    // Timer countdown
+    // Timer countdown - 40 minutes
     const startTime = new Date().getTime()
-    const examDuration = 90 * 60 * 1000 // 90 minutes in milliseconds
+    const examDuration = 40 * 60 * 1000 // 40 minutes in milliseconds
 
     const timer = setInterval(() => {
       const now = new Date().getTime()
@@ -258,17 +164,27 @@ export default function ExamPage() {
         const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60))
         const seconds = Math.floor((remaining % (1000 * 60)) / 1000)
 
-        setTimeLeft(`${hours} hour ${minutes} minutes ${seconds} seconds`)
+        if (hours > 0) {
+          setTimeLeft(`${hours} hour ${minutes} minutes ${seconds} seconds`)
+        } else {
+          setTimeLeft(`${minutes} minutes ${seconds} seconds`)
+        }
       }
     }, 1000)
 
-    // Cleanup function
+    // Add beforeunload event listener to prevent accidental navigation
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault()
+      e.returnValue = ""
+      return ""
+    }
+    window.addEventListener("beforeunload", handleBeforeUnload)
+
+    // Cleanup function - stop camera and mic when component unmounts
     return () => {
       clearInterval(timer)
-      if (videoRef.current && videoRef.current.srcObject) {
-        const stream = videoRef.current.srcObject as MediaStream
-        stream.getTracks().forEach((track) => track.stop())
-      }
+      window.removeEventListener("beforeunload", handleBeforeUnload)
+      // The MediaContext will handle stopping the stream when navigating away
     }
   }, [])
 
@@ -325,12 +241,7 @@ export default function ExamPage() {
 
   // Handle marking a question for review
   const handleMarkForReview = () => {
-    if (!selectedOptions[currentQuestion.id]) {
-      alert("Please select an option before marking for review.")
-      return
-    }
-
-    // Mark question as reviewed
+    // Mark question as reviewed - no need for an answer to be selected
     if (!reviewedQuestions.includes(currentQuestion.id)) {
       setReviewedQuestions([...reviewedQuestions, currentQuestion.id])
     }
@@ -354,11 +265,40 @@ export default function ExamPage() {
     }
   }
 
+  // Handle moving to the next question without saving (for already answered questions)
+  const handleNextQuestion = () => {
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1)
+    } else {
+      handleFinishExam()
+    }
+  }
+
   // Handle finishing the exam
   const handleFinishExam = () => {
-    // In a real app, you would submit all answers to the server
-    alert("Exam completed! Your answers have been submitted.")
-    router.push("/")
+    // Calculate score
+    const score = calculateScore()
+
+    // Store score in localStorage for the results page
+    localStorage.setItem("examScore", score.toString())
+    localStorage.setItem("totalQuestions", questions.length.toString())
+    localStorage.setItem("answeredQuestions", answeredQuestions.length.toString())
+    localStorage.setItem("examSubject", subject)
+
+    // Stop media streams before navigating
+    stopMediaStream()
+
+    // Navigate to results page
+    router.push("/results")
+  }
+
+  // Calculate the score based on answered questions
+  const calculateScore = () => {
+    // In a real app, this would compare answers with correct answers
+    // For now, we'll simulate a score based on the number of answered questions
+    const answeredCount = answeredQuestions.length
+    const correctAnswers = Math.floor(answeredCount * 0.7) // Simulate 70% correct answers
+    return correctAnswers
   }
 
   // Get question status for the status panel
@@ -371,10 +311,44 @@ export default function ExamPage() {
     return { visited, notVisited, reviewed, totalQuestions }
   }
 
+  // Handle exit confirmation
+  const handleExitConfirm = () => {
+    setShowExitConfirmation(false)
+    handleFinishExam()
+  }
+
+  const handleExitCancel = () => {
+    setShowExitConfirmation(false)
+  }
+
+  const handleExitExam = () => {
+    setShowExitConfirmation(true)
+  }
+
   const status = getQuestionStatus()
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Exit Confirmation Dialog */}
+      {showExitConfirmation && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+            <h3 className="text-xl font-bold mb-4">End Exam?</h3>
+            <p className="mb-6">
+              Are you sure you want to end the exam? Your answers will be submitted and you will see your results.
+            </p>
+            <div className="flex justify-end space-x-4">
+              <Button variant="outline" onClick={handleExitCancel}>
+                Cancel
+              </Button>
+              <Button className="bg-red-600 hover:bg-red-700" onClick={handleExitConfirm}>
+                End Exam
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-12 min-h-screen">
         {/* Left Column - 15% width */}
         <div className="md:col-span-2 bg-blue-50 p-4 flex flex-col">
@@ -415,6 +389,10 @@ export default function ExamPage() {
               </Button>
             ))}
           </div>
+
+          <Button variant="destructive" className="mt-auto" onClick={handleExitExam}>
+            End Exam
+          </Button>
         </div>
 
         {/* Middle Column - 60% width */}
@@ -459,6 +437,11 @@ export default function ExamPage() {
                         </div>
                       ))}
                     </RadioGroup>
+
+                    {/* Warning message about not being able to change answers */}
+                    <div className="text-sm text-gray-500 italic">
+                      You can't change the answer after saving and moving to the next question.
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -474,17 +457,25 @@ export default function ExamPage() {
                   variant="outline"
                   className="border-red-500 text-red-500 hover:bg-red-50 hover:text-red-600"
                   onClick={handleMarkForReview}
-                  disabled={lockedQuestions.includes(currentQuestion.id)}
                 >
                   Mark for Review & Next
                 </Button>
-                <Button
-                  className="bg-blue-600 hover:bg-blue-700"
-                  onClick={handleSaveAndContinue}
-                  disabled={!selectedOptions[currentQuestion.id] || lockedQuestions.includes(currentQuestion.id)}
-                >
-                  {currentQuestionIndex === questions.length - 1 ? "Finish Exam" : "Save & Continue"}
-                </Button>
+
+                {lockedQuestions.includes(currentQuestion.id) ? (
+                  // For already answered questions, show a simple Next button
+                  <Button className="bg-blue-600 hover:bg-blue-700" onClick={handleNextQuestion}>
+                    {currentQuestionIndex === questions.length - 1 ? "Finish Exam" : "Next"}
+                  </Button>
+                ) : (
+                  // For unanswered questions, show Save & Next button
+                  <Button
+                    className="bg-blue-600 hover:bg-blue-700"
+                    onClick={handleSaveAndContinue}
+                    disabled={!selectedOptions[currentQuestion.id]}
+                  >
+                    {currentQuestionIndex === questions.length - 1 ? "Finish Exam" : "Save & Next"}
+                  </Button>
+                )}
               </div>
             </>
           )}
@@ -539,11 +530,6 @@ export default function ExamPage() {
                 </Badge>
               </div>
             </div>
-          </div>
-
-          {/* Debug info - would be removed in production */}
-          <div className="mt-6 text-xs text-gray-500">
-            <p>Next question difficulty (from AI): {nextQuestionDifficulty}</p>
           </div>
         </div>
       </div>

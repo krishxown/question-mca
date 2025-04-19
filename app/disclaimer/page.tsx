@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { AlertTriangle, Camera, Mic } from "lucide-react"
+import { useMedia } from "@/context/media-context"
 
 export default function DisclaimerPage() {
   const router = useRouter()
@@ -21,21 +22,24 @@ export default function DisclaimerPage() {
 
   const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const mediaStreamRef = useRef<MediaStream | null>(null)
+
+  const { startMediaStream, stopMediaStream } = useMedia()
 
   // Request camera and microphone permissions
   const requestMediaPermissions = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+      const stream = await startMediaStream()
 
-      if (videoRef.current) {
+      if (stream && videoRef.current) {
         videoRef.current.srcObject = stream
       }
 
-      setCameraPermission(true)
-      setMicPermission(true)
+      setCameraPermission(stream !== null)
+      setMicPermission(stream !== null)
 
       // Store the stream in localStorage to use it on the exam page
-      localStorage.setItem("mediaStreamActive", "true")
+      localStorage.setItem("mediaStreamActive", stream !== null ? "true" : "false")
 
       return stream
     } catch (err) {
@@ -74,6 +78,8 @@ export default function DisclaimerPage() {
 
   const handleStartExam = () => {
     if (agreed && photoTaken) {
+      // We don't stop the media stream here because we want it to continue on the exam page
+      // The exam page will handle its own media stream
       router.push(`/exam?subject=${subject}`)
     }
   }
@@ -88,10 +94,7 @@ export default function DisclaimerPage() {
 
     // Cleanup function to stop all tracks when component unmounts
     return () => {
-      if (videoRef.current && videoRef.current.srcObject) {
-        const stream = videoRef.current.srcObject as MediaStream
-        stream.getTracks().forEach((track) => track.stop())
-      }
+      // We don't need to stop the stream here as the MediaContext will handle it
     }
   }, [])
 
