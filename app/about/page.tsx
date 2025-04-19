@@ -7,7 +7,7 @@ export default function AboutPage() {
       <Navigation />
       <div className="container py-8 md:py-12">
         <div className="text-center mb-12">
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">About AI Exam System</h1>
+          <h1 className="text-3xl md:text-4xl font-bold mb-4">About EduVerify</h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
             Learn more about our mission, vision, and what drives us to create the best AI-powered examination platform.
           </p>

@@ -9,7 +9,7 @@ export default function ContactPage() {
       <Navigation />
       <div className="container py-8 md:py-12">
         <div className="text-center mb-12">
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">Contact Us</h1>
+          <h1 className="text-3xl md:text-4xl font-bold mb-4">Contact Us - EduVerify</h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
             Have questions or feedback? We'd love to hear from you. Use our contact information below.
           </p>
