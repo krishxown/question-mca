@@ -8,6 +8,7 @@ import { Code, Database, FileCode, Layout, Terminal } from "lucide-react"
 const subjects = [
   {
     id: 1,
+    slug: "software-engineering",
     name: "Software Engineering",
     description: "Principles and practices of software development",
     icon: <FileCode className="h-12 w-12 text-blue-600" />,
@@ -15,6 +16,7 @@ const subjects = [
   },
   {
     id: 2,
+    slug: "computer-architecture",
     name: "Computer Architecture",
     description: "Design and organization of computer systems",
     icon: <Database className="h-12 w-12 text-green-600" />,
@@ -22,6 +24,7 @@ const subjects = [
   },
   {
     id: 3,
+    slug: "python",
     name: "Python",
     description: "Programming with Python language",
     icon: <Terminal className="h-12 w-12 text-yellow-600" />,
@@ -29,6 +32,7 @@ const subjects = [
   },
   {
     id: 4,
+    slug: "dsa",
     name: "DSA",
     description: "Data Structures and Algorithms",
     icon: <Code className="h-12 w-12 text-purple-600" />,
@@ -36,6 +40,7 @@ const subjects = [
   },
   {
     id: 5,
+    slug: "html",
     name: "HTML",
     description: "Web markup language and structure",
     icon: <Layout className="h-12 w-12 text-red-600" />,
@@ -66,7 +71,7 @@ export default function HomePage() {
                 </div>
               </CardHeader>
               <CardFooter className="p-6">
-                <Link href="/disclaimer" className="w-full">
+                <Link href={`/disclaimer?subject=${subject.slug}`} className="w-full">
                   <Button className="w-full bg-blue-600 hover:bg-blue-700">Start Exam</Button>
                 </Link>
               </CardFooter>

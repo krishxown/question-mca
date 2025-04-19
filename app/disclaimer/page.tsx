@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Navigation } from "@/components/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -10,6 +10,9 @@ import { AlertTriangle, Camera, Mic } from "lucide-react"
 
 export default function DisclaimerPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const subject = searchParams.get("subject") || "software-engineering"
+
   const [agreed, setAgreed] = useState(false)
   const [cameraPermission, setCameraPermission] = useState<boolean | null>(null)
   const [micPermission, setMicPermission] = useState<boolean | null>(null)
@@ -32,7 +35,6 @@ export default function DisclaimerPage() {
       setMicPermission(true)
 
       // Store the stream in localStorage to use it on the exam page
-      // In a real app, you would use a more sophisticated state management solution
       localStorage.setItem("mediaStreamActive", "true")
 
       return stream
@@ -72,7 +74,7 @@ export default function DisclaimerPage() {
 
   const handleStartExam = () => {
     if (agreed && photoTaken) {
-      router.push("/exam")
+      router.push(`/exam?subject=${subject}`)
     }
   }
 
