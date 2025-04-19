@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
@@ -12,6 +12,10 @@ import { Mic, Clock } from "lucide-react"
 
 export default function ExamPage() {
   const [selectedOption, setSelectedOption] = useState<string | null>(null)
+  const [timeLeft, setTimeLeft] = useState("1 hour 30 minutes 0 seconds")
+  const [userPhoto, setUserPhoto] = useState<string | null>(null)
+
+  const videoRef = useRef<HTMLVideoElement>(null)
 
   // Mock question data
   const question = {
@@ -28,6 +32,65 @@ export default function ExamPage() {
   // Generate question number buttons
   const questionNumbers = Array.from({ length: 20 }, (_, i) => i + 1)
 
+  // Initialize webcam
+  useEffect(() => {
+    // Get user photo from localStorage
+    const storedPhoto = localStorage.getItem("userPhoto")
+    if (storedPhoto) {
+      setUserPhoto(storedPhoto)
+    }
+
+    // Initialize webcam
+    const initWebcam = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream
+        }
+      } catch (err) {
+        console.error("Error accessing media devices:", err)
+      }
+    }
+
+    // Check if media stream was active
+    const mediaStreamActive = localStorage.getItem("mediaStreamActive") === "true"
+    if (mediaStreamActive) {
+      initWebcam()
+    }
+
+    // Timer countdown
+    const startTime = new Date().getTime()
+    const examDuration = 90 * 60 * 1000 // 90 minutes in milliseconds
+
+    const timer = setInterval(() => {
+      const now = new Date().getTime()
+      const elapsed = now - startTime
+      const remaining = examDuration - elapsed
+
+      if (remaining <= 0) {
+        clearInterval(timer)
+        setTimeLeft("Time's up!")
+        // In a real app, you would submit the exam automatically
+      } else {
+        const hours = Math.floor(remaining / (1000 * 60 * 60))
+        const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60))
+        const seconds = Math.floor((remaining % (1000 * 60)) / 1000)
+
+        setTimeLeft(`${hours} hour ${minutes} minutes ${seconds} seconds`)
+      }
+    }, 1000)
+
+    // Cleanup function
+    return () => {
+      clearInterval(timer)
+      if (videoRef.current && videoRef.current.srcObject) {
+        const stream = videoRef.current.srcObject as MediaStream
+        stream.getTracks().forEach((track) => track.stop())
+      }
+    }
+  }, [])
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-4 min-h-screen">
@@ -35,7 +98,11 @@ export default function ExamPage() {
         <div className="bg-blue-50 p-4 flex flex-col">
           <div className="flex flex-col items-center mb-6 pt-4">
             <Avatar className="h-20 w-20 mb-2">
-              <AvatarImage src="/placeholder.svg?height=80&width=80" alt="Student" />
+              {userPhoto ? (
+                <AvatarImage src={userPhoto || "/placeholder.svg"} alt="Student" />
+              ) : (
+                <AvatarImage src="/placeholder.svg?height=80&width=80" alt="Student" />
+              )}
               <AvatarFallback>ST</AvatarFallback>
             </Avatar>
             <h2 className="font-medium">John Doe</h2>
@@ -106,7 +173,7 @@ export default function ExamPage() {
         <div className="bg-gray-50 p-4 border-l">
           <div className="bg-blue-100 p-3 rounded-lg mb-6 flex items-center">
             <Clock className="h-5 w-5 text-blue-600 mr-2" />
-            <span className="font-medium text-blue-800">Time Left: 1 hour 28 minutes 3 seconds</span>
+            <span className="font-medium text-blue-800">{timeLeft}</span>
           </div>
 
           <div className="bg-white p-4 rounded-lg shadow-sm mb-6">
@@ -135,8 +202,8 @@ export default function ExamPage() {
 
           <div className="bg-white p-4 rounded-lg shadow-sm mb-6">
             <h3 className="font-medium mb-3">Camera Preview</h3>
-            <div className="aspect-video bg-gray-200 rounded-lg flex items-center justify-center mb-2">
-              <img src="/placeholder.svg?height=180&width=320" alt="Camera Preview" className="rounded-lg" />
+            <div className="aspect-video bg-gray-200 rounded-lg flex items-center justify-center mb-2 overflow-hidden">
+              <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
             </div>
           </div>
 
